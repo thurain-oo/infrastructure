@@ -1,0 +1,2 @@
+//Set the machine name
+sudo hostnamectl set-hostname WebServer1
