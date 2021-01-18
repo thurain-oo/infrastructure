@@ -1,0 +1,19 @@
+//Set Hostname
+sudo hostnamectl set-hostname Internal_CA
+
+//Assign static ip add to NIC (enp0s3)
+//Edit the file /etc/network/interfaces
+
+allow-hotplug enp0s3
+iface enp0s3 inet static
+address 10.0.2.3
+network 10.0.2.0
+netmask 255.255.255.0
+broadcast 10.0.2.255
+
+
+//Restart Network service
+sudo systemctl restart networking ifup@enp0s3
+
+//Check the static ip with 
+ip addr
