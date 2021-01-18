@@ -12,7 +12,7 @@ netmask 255.255.255.0
 broadcast 10.0.1.255
 
 //restart network service with specific networkcard
-sudo systemctl restart networking enp0s3
+sudo systemctl restart networking ifup@enp0s3
 
 //check the static ip address
 ip addr
