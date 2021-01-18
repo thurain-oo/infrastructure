@@ -1,0 +1,2 @@
+//Set Hostname
+sudo hostnamectl set-hostname Router
