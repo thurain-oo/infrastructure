@@ -5,7 +5,7 @@ sudo hostnamectl set-hostname WebServer1
 //TO-DO
 //edit the file /etc/network/interfaces
 
-allow-hotplug enp0s3
+allow enp0s3
 address 10.0.1.1
 network 10.0.1.0
 netmask 255.255.255.0
