@@ -16,3 +16,10 @@ sudo systemctl restart networking ifup@enp0s3
 
 //check the static ip address
 ip addr
+
+
+//Set Port No for ssh so admin can remote log in from admin machine
+Edit  /etc/ssh/sshd_config file to change port to 1013
+
+//restart sshd 
+sudo systemctl restart sshd
