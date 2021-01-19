@@ -77,3 +77,60 @@ sudo apt install apache2
 sudo a2dissite 000-default.conf
 sudo a2ensite thurain.name.conf test.com.conf example.com.conf
 sudo systemctl restart apache2
+
+
+//Put website project in /var/www/<website>/public_html
+//For www.thurain.name
+mkdir /var/www/thurain.name/public_html
+cd /var/www/thurain.name/public_html
+
+//Create index.html
+<html>
+  <head>
+    <title>Welcome to Thurain.name!</title>
+  </head>
+  <body>
+    <h1>Success! The thurain.name virtual host is working!</h1>
+  </body>
+</html>
+
+//For www.example.com
+mkdir /var/www/example.com/public_html
+cd /var/www/example.com/public_html
+
+//Create index.html
+<html>
+  <head>
+    <title>Welcome to Example.com!</title>
+  </head>
+  <body>
+    <h1>Success! The Example.com virtual host is working!</h1>
+  </body>
+</html>
+
+//For www.test.com
+mkdir /var/www/test.com/public_html
+cd /var/www/test.com/public_html
+
+//Create index.html
+<html>
+  <head>
+    <title>Welcome to Test.com!</title>
+  </head>
+  <body>
+    <h1>Success! The Test.com virtual host is working!</h1>
+  </body>
+</html>
+
+//Send /var/www/folder updates to webserver2 in every minute
+       //both server must run rsync tool
+apt install rsync
+//The recipient server webserver 2 must allow root login in /etc/ssh/sshd_config (or) tune permission
+//Edit crontab
+crontab -e 
+//Add the following line
+ * * * * * sudo sshpass -p 'thurain' rsync -r -e 'ssh -p 1004' /var/www/ root@webserver2.thurain.name:/var/www
+ 
+ 
+
+
