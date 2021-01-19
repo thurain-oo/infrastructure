@@ -23,3 +23,57 @@ Edit  /etc/ssh/sshd_config file to change port to 1013
 
 //restart sshd 
 sudo systemctl restart sshd
+
+//Install web server
+sudo apt install apache2
+
+//Create  configuration file for websites
+//For www.thurain.name
+//create new file /etc/apache2/sites-available/thurain.name.conf
+
+<VirtualHost *:80>
+       ServerAdmin thurain@thurain.name
+       ServerName www.thurain.name
+       ServerAlias thrain.name
+       DocumentRoot /var/www/thurain.name/
+       ErrorLog ${APACHE_LOG_DIR}/error.log
+       CustomLog ${APACHE_LOG_DIR}/access.log combined
+       #RewriteEngine On
+       #RewriteCond %{HTTPS} off
+       #RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</VirtualHost>
+
+//For www.example.com
+//create new file /etc/apache2/sites-available/example.com.conf
+
+<VirtualHost *:80>
+       ServerAdmin thurain@thurain.name
+       ServerName www.example.com
+       ServerAlias example.com
+       DocumentRoot /var/www/example.com/
+       ErrorLog ${APACHE_LOG_DIR}/error.log
+       CustomLog ${APACHE_LOG_DIR}/access.log combined
+       #RewriteEngine On
+       #RewriteCond %{HTTPS} off
+       #RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</VirtualHost>
+
+//For www.test.com
+//create new file /etc/apache2/sites-available/test.com.conf
+
+<VirtualHost *:80>
+       ServerAdmin thurain@thurain.name
+       ServerName www.test.com
+       ServerAlias test.com
+       DocumentRoot /var/www/test.com/
+       ErrorLog ${APACHE_LOG_DIR}/error.log
+       CustomLog ${APACHE_LOG_DIR}/access.log combined
+      # RewriteEngine On
+      # RewriteCond %{HTTPS} off
+      # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</VirtualHost>
+
+//Enable sites
+sudo a2dissite 000-default.conf
+sudo a2ensite thurain.name.conf test.com.conf example.com.conf
+sudo systemctl restart apache2
