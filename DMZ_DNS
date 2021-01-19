@@ -27,9 +27,19 @@ view "internal" {
         };
         
         
-        zone "srv.world" {
+        zone "thurain.name" {
                 type master;
-                file "/etc/bind/srv.world.lan";
+                file "/etc/bind/thurain.name.lan";
+                allow-update { none; };
+        };
+        zone "example.com" {
+                type master;
+                file "/etc/bind/example.com.lan";
+                allow-update { none; };
+        };
+        zone "test.com" {
+                type master;
+                file "/etc/bind/test.com.lan";
                 allow-update { none; };
         };
         set zone for internal *note
@@ -49,7 +59,7 @@ view "external" {
         # prohibit recursion
         recursion no;
         # set zone for external
-        zone "srv.world" {
+        zone "thurain.name" {
                 type master;
                 file "/etc/bind/srv.world.wan";
                 allow-update { none; };
@@ -120,6 +130,22 @@ $TTL 86400
      IN  A       10.0.1.1
 webserver1 IN A 10.0.1.3
 webserver2 IN A 10.0.1.4
+
+//create file /etc/bind/example.com.lan
+$TTL 86400
+@   IN  SOA     dns.example.com. root.example.com. (
+        2019071601  ;Serial
+        3600        ;Refresh
+        1800        ;Retry
+        604800      ;Expire
+        86400       ;Minimum TTL
+)
+        
+        IN  NS     dns.example.com.
+        
+dns     IN  A       10.0.1.1
+www     IN  A       10.0.1.3
+
 
 
 //For external zone 
