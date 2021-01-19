@@ -79,3 +79,4 @@ sudo a2ensite thurain.name.conf test.com.conf example.com.conf
 sudo systemctl restart apache2
 
 //Install rsync to synchronize with webserver1 's Data
+sudo apt install rsync
