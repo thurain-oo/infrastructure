@@ -125,7 +125,9 @@ cd /var/www/test.com/public_html
 //Send /var/www/folder updates to webserver2 in every minute
        //both server must run rsync tool
 apt install rsync
-//The recipient server webserver 2 must allow root login in /etc/ssh/sshd_config (or) tune permission
+apt install sshpass
+
+//The recipient server webserver 2 must allow root login in /etc/ssh/sshd_config (or the otherway : tune file permission)
 //Edit crontab
 crontab -e 
 //Add the following line
