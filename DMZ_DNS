@@ -1,0 +1,143 @@
+//Set Hostname
+sudo hostnamectl set-hostname dns
+
+//Change ssh port
+nano /etc/ssh/sshd_config
+>>port 1011
+sudo systemctl restart sshd
+
+//Install Dns service
+apt -y install bind9 bind9utils dnsutils
+
+//Edit /etc/bind/named.conf
+
+include "/etc/bind/named.conf.options";
+include "/etc/bind/named.conf.local";
+
+# include "/etc/bind/named.conf.default-zones";
+
+include "/etc/bind/named.conf.internal-zones";
+include "/etc/bind/named.conf.external-zones";
+
+//create new internal zone file
+view "internal" {
+        match-clients {
+                localhost;
+                10.0.0.0/24;
+        };
+        
+        
+        zone "srv.world" {
+                type master;
+                file "/etc/bind/srv.world.lan";
+                allow-update { none; };
+        };
+        set zone for internal *note
+        zone "0.0.10.in-addr.arpa" {
+                type master;
+                file "/etc/bind/0.0.10.db";
+                allow-update { none; };
+        };
+        include "/etc/bind/named.conf.default-zones";
+};
+
+//create new external zone file
+view "external" {
+        match-clients { any; };
+        # allow any query
+        allow-query { any; };
+        # prohibit recursion
+        recursion no;
+        # set zone for external
+        zone "srv.world" {
+                type master;
+                file "/etc/bind/srv.world.wan";
+                allow-update { none; };
+        };
+        # set zone for external *note
+        zone "80.0.16.172.in-addr.arpa" {
+                type master;
+                file "/etc/bind/80.0.16.172.db";
+                allow-update { none; };
+        };
+};
+
+//create DNS cache service
+//Edit /etc/bind/named.conf.options
+
+options {
+        directory "/var/cache/bind";
+
+        // If there is a firewall between you and nameservers you want
+        // to talk to, you may need to fix the firewall to allow multiple
+        // ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+        // If your ISP provided one or more IP addresses for stable
+        // nameservers, you probably want to use them as forwarders.
+        // Uncomment the following block, and insert the addresses replacing
+        // the all-0's placeholder.
+
+         forwarders {
+              8.8.8.8;
+              8.8.4.4;
+         };
+        # query range you allow
+        allow-query { localhost; 10.0.1.0/24; 10.0.2.0/24;};
+        # the range to transfer zone files
+        allow-transfer { localhost; 10.0.1.0/24; };
+        # recursion range you allow
+        allow-recursion { localhost; 10.0.1.0/24; };
+        //========================================================================
+        // If BIND logs error messages about the root key being expired,
+        // you will need to update your keys.  See https://www.isc.org/bind-keys
+        //========================================================================
+        dnssec-validation auto;
+
+        auth-nxdomain no;    # conform to RFC1035
+        # change if not use IPV6
+        listen-on-v6 { none; };
+};
+
+//Set zone file
+//For internal zone 
+//create file /etc/bind/thurain.name.lan
+$TTL 86400
+@   IN  SOA     dns.thurain.name. root.thurain.name. (
+        2019071601  ;Serial
+        3600        ;Refresh
+        1800        ;Retry
+        604800      ;Expire
+        86400       ;Minimum TTL
+)
+        # define name server
+        IN  NS     dns.thurain.name.
+        # define name server's IP address
+        IN  A       10.0.0.30
+        # define mail exchanger
+        IN  MX 10   dns.thurain.name.
+
+# define IP address of the hostname
+     IN  A       10.0.1.1
+webserver1 IN A 10.0.1.3
+webserver2 IN A 10.0.1.4
+
+
+//For external zone 
+//create file /etc/bind/thurain.name.wan
+$TTL 86400
+@   IN  SOA     dlp.srv.world. root.srv.world. (
+        2019071601  ;Serial
+        3600        ;Refresh
+        1800        ;Retry
+        604800      ;Expire
+        86400       ;Minimum TTL
+)
+       
+        IN  NS      dlp.srv.world.
+      
+        IN  A       172.16.0.82
+       
+        IN  MX 10   dlp.srv.world.
+
+
+dns     IN  A       192.168.1.6
