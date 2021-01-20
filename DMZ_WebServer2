@@ -28,6 +28,8 @@ sudo systemctl restart sshd
 sudo apt install apache2
 
 
+vi /etc/apache2/mods-enabled/dir.conf
+DirectoryIndex index.html index.htm index.php
 
 //Create  configuration file for websites
 //For www.thurain.name
