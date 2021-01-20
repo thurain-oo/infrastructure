@@ -1,5 +1,5 @@
 //Set Hostname
-sudo hostnamectl set-hostname Internal_CA
+sudo hostnamectl set-hostname ca
 
 //Assign static ip add to NIC (enp0s3)
 //Edit the file /etc/network/interfaces
@@ -17,3 +17,104 @@ sudo systemctl restart networking ifup@enp0s3
 
 //Check the static ip with 
 ip addr
+
+
+//Configure as CA using openssl
+//Edit as root 
+//make dirs to meet the default setting of openssl config file : /usr/lib/ssl/openssl.cnf
+mkdir /root/ca
+cd /root/ca
+mkdir  newcerts 
+mkdir certs
+mkdir crl
+mkdir private
+mkdir requests
+touch index.txt
+echo '1234' > serial
+
+//Edit /usr/lib/ssl/openssl.cnf
+  //change cd defalult dir to the dir we created before which is /root/ca
+
+  dir = /root/ca   //Line no : 48
+
+
+# For the CA policy
+[ policy_match ]
+countryName             = optional
+stateOrProvinceName     = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+//Done Editing file : /usr/lib/ssl/openssl.cnf
+
+//Create CA root private key  that is needed to create root certificate
+openssl genrsa -aes256 -out private/cakey.pem 4096
+
+//Create CA root certificate
+openssl req -new -x509 -key /root/ca/private/cakey.pem -out cacert.crt
+
+//Note: set cn to FQDN of hostname ,that is ca.thurain.name
+//check the fqdn of hostname
+hostname -f
+
+//Create certificate for websites
+
+//For www.thurain.name
+//create private key
+openssl genrsa -aes256 -out thurain.name.pem 2048
+
+//use that private key to create cert request (csr)
+openssl req -new -key thurain.name.pem -out thurain.name.csr
+
+//create website certificate
+openssl ca -in thurain.name.csr -out thurain.name.crt
+
+//Note: common name : www.thurain.name ( must be website name)
+
+//remove passphrase from  encrypted private key
+openssl rsa -in thurain.name.pem -out unencrypted.thurain.name.pem
+mv unencrypted.thurain.name.pem thurain.name.pem
+
+
+//Done .. now we can use  unencrypted private key and certificate for www.thurain.name
+
+//For www.example.com
+//create private key
+openssl genrsa -aes256 -out example.com.pem 2048
+
+//use that private key to create cert request (csr)
+openssl req -new -key example.com.pem -out example.com.csr
+
+//create website certificate
+openssl ca -in example.com.csr -out example.com.crt
+
+//Note: common name : www.example.com( must be website name)
+
+//remove passphrase from  encrypted private key
+openssl rsa -in example.com.pem -out unencrypted.example.com.pem
+mv unencrypted.example.com.pem example.com.pem
+
+
+//Done .. now we can use  unencrypted private key and certificate for www.example.com
+
+//For www.test.com
+//create private key
+openssl genrsa -aes256 -out test.com.pem 2048
+
+//use that private key to create cert request (csr)
+openssl req -new -key test.com.pem -out test.com.csr
+
+//create website certificate
+openssl ca -in test.com.csr -out test.com.crt
+
+//Note: common name : www.test.com ( must be website name)
+
+//remove passphrase from  encrypted private key
+openssl rsa -in test.com.pem -out unencrypted.test.com.pem
+mv unencrypted.test.com.pem test.com.pem
+
+
+//Done .. now we can use  unencrypted private key and certificate for www.test.com
+.................
