@@ -27,56 +27,106 @@ sudo systemctl restart sshd
 //Install web server
 sudo apt install apache2
 
+
+
 //Create  configuration file for websites
 //For www.thurain.name
 //create new file /etc/apache2/sites-available/thurain.name.conf
 
 <VirtualHost *:80>
-       ServerAdmin thurain@thurain.name
-       ServerName www.thurain.name
-       ServerAlias thrain.name
-       DocumentRoot /var/www/thurain.name/
-       ErrorLog ${APACHE_LOG_DIR}/error.log
-       CustomLog ${APACHE_LOG_DIR}/access.log combined
-       #RewriteEngine On
-       #RewriteCond %{HTTPS} off
-       #RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+        ServerName thurain.name
+        ServerAlias www.thurain.name
+        ServerAdmin thurain@thurain.name
+        DocumentRoot /var/www/thurain.name/public_html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+#       RewriteEngine On
+#       RewriteCond %{HTTPS} off
+#       RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+        ServerAdmin thurain@thurain.name
+        ServerName thurain.name
+        ServerAlias www.thrain.name
+        DocumentRoot /var/www/thurain.name/public_html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+        SSLEngine on
+        SSLCertificateFile /etc/ssl/certs/thurain.name.crt
+        SSLCertificateKeyFile /etc/ssl/certs/thurain.name.pem
 </VirtualHost>
 
 //For www.example.com
 //create new file /etc/apache2/sites-available/example.com.conf
 
 <VirtualHost *:80>
-       ServerAdmin thurain@thurain.name
-       ServerName www.example.com
-       ServerAlias example.com
-       DocumentRoot /var/www/example.com/
-       ErrorLog ${APACHE_LOG_DIR}/error.log
-       CustomLog ${APACHE_LOG_DIR}/access.log combined
-       #RewriteEngine On
-       #RewriteCond %{HTTPS} off
-       #RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+        ServerName example.com
+        ServerAlias www.example.com
+        ServerAdmin thurain@thurain.name
+        DocumentRoot /var/www/example.com/public_html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+#       RewriteEngine On
+#    RewriteCond %{HTTPS} off
+#    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+        ServerAdmin thurain@thurain.name
+        ServerName example.com
+        ServerAlias www.example.com
+        DocumentRoot /var/www/example.com/public_html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+        SSLEngine on
+        SSLCertificateFile /etc/ssl/certs/example.com.crt
+        SSLCertificateKeyFile /etc/ssl/certs/example.com.pem
 </VirtualHost>
 
 //For www.test.com
 //create new file /etc/apache2/sites-available/test.com.conf
 
 <VirtualHost *:80>
-       ServerAdmin thurain@thurain.name
-       ServerName www.test.com
-       ServerAlias test.com
-       DocumentRoot /var/www/test.com/
-       ErrorLog ${APACHE_LOG_DIR}/error.log
-       CustomLog ${APACHE_LOG_DIR}/access.log combined
-      # RewriteEngine On
-      # RewriteCond %{HTTPS} off
-      # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+        ServerName test.com
+        ServerAlias www.test.com
+        ServerAdmin thurain@thurain.name
+        DocumentRoot /var/www/testpage.com/public_html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+#       RewriteEngine On
+#    RewriteCond %{HTTPS} off
+#    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </VirtualHost>
+<VirtualHost *:443>
+        ServerAdmin thurain@thurain.name
+        ServerName thurain.name
+        ServerAlias www.test.com
+        DocumentRoot /var/www/testpage.com/public_html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+        SSLEngine on
+       SSLCertificateFile /etc/ssl/certs/test.com.crt
+        SSLCertificateKeyFile /etc/ssl/certs/test.com.pem
+</VirtualHost>
+
+//Place certificates and private keys for websites issued from ca.thurain.name in /etc/ssl/certs
+sudo mv thurain.name.pem thurain.name.crt /etc/ssl/certs
+sudo mv test.com.pem test.com.crt /etc/ssl/certs
+sudo mv example.com.pem example.comcrt /etc/ssl/certs
+
 
 //Enable sites
 sudo a2dissite 000-default.conf
 sudo a2ensite thurain.name.conf test.com.conf example.com.conf
+
+
+//Enable modules for ssl 
+sudo a2enmod ssl
+sudo a2enmod rewrite
+
 sudo systemctl restart apache2
+
 
 //Install rsync to synchronize with webserver1 's Data
 sudo apt install rsync
