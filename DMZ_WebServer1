@@ -128,23 +128,30 @@ sudo systemctl restart apache2
 
 
 //Put website project in /var/www/<website>/public_html
+vi /etc/apache2/mods-enabled/dir.conf
+DirectoryIndex index.html index.htm index.php
+
 //For www.thurain.name
 mkdir /var/www/thurain.name/public_html
 cd /var/www/thurain.name/public_html
 
-//Create index.html
+//Create index.php
 <html>
-  <head>
-    <title>Welcome to Thurain.name!</title>
-  </head>
-  <body>
-    <h1>Success! The thurain.name virtual host is working!</h1>
-  </body>
+<title>TakeMeToYourHeart</title>
+<body>
+<div style="width: 100%; font-size: 20px; font-weight: bold; text-align: center;">
+<?php
+    print "Dota2 is the best.";
+        echo exec('hostname');
+?>
+</div>
+</body>
 </html>
 
 //For www.example.com
 mkdir /var/www/example.com/public_html
 cd /var/www/example.com/public_html
+
 
 //Create index.html
 <html>
