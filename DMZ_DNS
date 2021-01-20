@@ -175,3 +175,34 @@ dns     IN  A       192.168.1.6
 =============================================================================================
 -------------------------------------------------------------------------------------------
 //Load Balancing with HA Proxy
+frontend http-in
+        mode tcp
+        bind *:80
+        bind *:443
+        option tcplog
+        acl thurain.name hdr_dom(host) -i www.thurain.name
+        acl example.com hdr_dom(host) -i www.example.com
+        acl test.com    hdr_dom(host) -i www.test.com
+
+        use_backend FIRST if thurain.name
+        use_backend SECOND if example.com
+        use_backend THIRD if test.com
+
+
+backend FIRST
+        mode tcp
+        balance roundrobin
+        server webserver1.thurain.name 10.0.1.3:80
+        server webserver2.thurain.name 10.0.1.4:80
+
+backend SECOND
+        mode tcp
+        balance roundrobin
+        server webserver1.thurain.name 10.0.1.3:80
+        server webserver2.thurain.name 10.0.1.4:80
+        
+ backend THIRD
+        mode tcp
+        balance roundrobin
+        server webserver1.thurain.name 10.0.1.3:80
+        server webserver2.thurain.name 10.0.1.4:80
