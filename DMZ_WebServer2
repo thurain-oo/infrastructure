@@ -27,6 +27,10 @@ sudo systemctl restart sshd
 //Install web server
 sudo apt install apache2
 
+//To exclude Apache version in error status response:
+//Edit /etc/apache2/conf-enabled/security.conf
+SeverTokens Prod
+
 
 vi /etc/apache2/mods-enabled/dir.conf
 DirectoryIndex index.html index.htm index.php
