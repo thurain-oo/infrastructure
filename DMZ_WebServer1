@@ -27,6 +27,10 @@ sudo systemctl restart sshd
 //Install web server
 sudo apt install apache2
 
+//To exclude Apache version in error status response:
+//Edit /etc/apache2/conf-enabled/security.conf
+SeverTokens Prod
+
 //Create  configuration file for websites
 //For www.thurain.name
 //create new file /etc/apache2/sites-available/thurain.name.conf
