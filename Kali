@@ -1,0 +1,74 @@
+--------------------------------Start of ModSecurity Section-----------------------------------------------
+//Create WebServer
+//Host DVWA
+Reference this link : 
+https://medium.com/datadriveninvestor/setup-install-dvwa-into-your-linux-distribution-d76dc3b80357
+
+//If Masked Mariadb service in Systemd, reference this link
+https://blog.ruanbekker.com/blog/2017/12/09/unmask-a-masked-service-in-systemd/
+
+//Install Modesecurity version 3
+
+sudo apt update && sudo apt upgrade -y
+
+//Install dependencies
+sudo apt install g++ flex bison curl apache2-dev doxygen libyajl-dev ssdeep liblua5.2-dev libgeoip-dev libtool dh-autoreconf libcurl4-gnutls-dev libxml2 libpcre++-dev libxml2-dev git
+
+
+//Download  Modsecurity v3 git repo and compile
+cd ~/Downloads/
+git clone https://github.com/SpiderLabs/ModSecurity.git
+cd ModSecurity
+sudo ./build.sh
+sudo ./configure {make sure yajl library is found that is need to generate JSON audit log file}
+sudo make
+sudo make install
+
+//Install ModSecurity-Apache connector
+cd ~/Downloads/
+git clone https://github.com/SpiderLabs/ModSecurity-apache
+cd ModSecurity-apache
+./autogen.sh
+./configure --with-libmodsecurity=/usr/local/modsecurity/
+sudo make
+sudo make install
+
+//Add the following line to the end of the Apache configuration file(/etc/apache2/apache2.conf).
+LoadModule security3_module /usr/lib/apache2/modules/mod_security3.so
+
+sudo cp ~/Downloads/ModSecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
+sudo cp ~/Downloads/ModSecurity/unicode.mapping /etc/modsecurity/
+
+//Edit modsec config file to generate in JSON format
+sudo nano /etc/modsecurity/modsecurity.conf
+
+SecAuditLogFormat JSON
+
+*Note : default audit log file : /var/log/modsec_audit.log
+
+//Download generic detection rule set for web applications from OWASP ModSecurity Core Rule Set
+sudo git clone https://github.com/SpiderLabs/owasp-modsecurity-crs.git /etc/modsecurity/owasp-crs
+sudo cp /etc/modsecurity/owasp-crs/crs-setup.conf.example /etc/modsecurity/owasp-crs/crs-setup.conf
+
+//Create a general configuration file for rules and configuration. You can edit it later to add your custom rules.
+sudo vim /etc/modsecurity/rules.conf
+
+Include "/etc/modsecurity/modsecurity.conf"
+Include "/etc/modsecurity/owasp-crs/crs-setup.conf"
+Include "/etc/modsecurity/owasp-crs/rules/*.conf"
+
+sudo vim /etc/apache2/sites-available/yoursite.conf
+<VirtualHost *:80>
+        DocumentRoot /var/www/dvwa
+  		  ServerName thurain.name
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+  		modsecurity on
+  		modsecurity_rules_file /etc/modsecurity/rules.conf
+</VirtualHost>
+
+sudo apachectl configtest
+sudo systemctl restart apache2
+
+------------------------------------End of Mod Security Section -----------------------------
