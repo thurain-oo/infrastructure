@@ -77,6 +77,10 @@ openssl ca -in thurain.name.csr -out thurain.name.crt
 openssl rsa -in thurain.name.pem -out unencrypted.thurain.name.pem
 mv unencrypted.thurain.name.pem thurain.name.pem
 
+//combine certificate and unencrypted private key in one file , that is called pem format
+cat thurain.name.crt thurain.name.pem > new.pem
+mv new.pem thurain.name.pem
+
 
 //Done .. now we can use  unencrypted private key and certificate for www.thurain.name
 
@@ -96,6 +100,9 @@ openssl ca -in example.com.csr -out example.com.crt
 openssl rsa -in example.com.pem -out unencrypted.example.com.pem
 mv unencrypted.example.com.pem example.com.pem
 
+//combine certificate and unencrypted private key in one file , that is called pem format
+cat example.com.crt example.com.pem > new.pem
+mv new.pem example.com.pem
 
 //Done .. now we can use  unencrypted private key and certificate for www.example.com
 
@@ -115,6 +122,9 @@ openssl ca -in test.com.csr -out test.com.crt
 openssl rsa -in test.com.pem -out unencrypted.test.com.pem
 mv unencrypted.test.com.pem test.com.pem
 
+//combine certificate and unencrypted private key in one file , that is called pem format
+cat test.com.crt test.com.pem > new.pem
+mv new.pem test.com.pem
 
 //Done .. now we can use  unencrypted private key and certificate for www.test.com
 .................
